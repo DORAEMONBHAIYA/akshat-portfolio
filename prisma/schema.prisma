@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id            String   @id @default(cuid())
+  name          String   @default("Developer")
+  title         String   @default("AI/ML Engineer")
+  tagline       String   @default("Building intelligent systems")
+  bio           String   @default("")
+  avatar        String   @default("")
+  email         String   @default("")
+  phone         String   @default("")
+  location      String   @default("")
+  website       String   @default("")
+  github        String   @default("")
+  linkedin      String   @default("")
+  twitter       String   @default("")
+  resume        String   @default("")
+  leetcode      String   @default("")
+  heroImage     String   @default("")
+  titles        String   @default("AI/ML Engineer,Full-Stack Developer,Deep Learning Researcher")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SkillCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String
+  level       Int      @default(80)
+  category    String   @default("Programming")
+  icon        String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProjectCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String    @default("")
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @default("")
+  longDesc    String    @default("")
+  image       String    @default("")
+  techStack   String    @default("")
+  github      String    @default("")
+  liveUrl     String    @default("")
+  featured    Boolean   @default(false)
+  order       Int       @default(0)
+  categoryId  String?
+  category    ProjectCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  company     String
+  role        String
+  description String   @default("")
+  startDate   String   @default("")
+  endDate     String   @default("")
+  current     Boolean  @default(false)
+  techStack   String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  institution String
+  degree      String
+  field       String   @default("")
+  description String   @default("")
+  startDate   String   @default("")
+  endDate     String   @default("")
+  gpa         String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   @default("")
+  excerpt     String   @default("")
+  coverImage  String   @default("")
+  tags        String   @default("")
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  date        String   @default("")
+  techStack   String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  subject     String   @default("")
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model HeroStat {
+  id        String   @id @default(cuid())
+  label     String   @default("")
+  value     String   @default("")
+  icon      String   @default("")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
