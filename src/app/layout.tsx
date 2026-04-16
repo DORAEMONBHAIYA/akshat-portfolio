@@ -14,12 +14,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alex Chen | AI/ML Engineer & Full-Stack Developer",
-  description: "Portfolio of Alex Chen - B.Tech CSE (AI & ML) | Building intelligent systems with Deep Learning, NLP, and Computer Vision",
-  keywords: ["AI Engineer", "Machine Learning", "Deep Learning", "NLP", "Computer Vision", "Portfolio", "Full-Stack Developer"],
-  authors: [{ name: "Alex Chen" }],
+  title: "Akshat Gupta | AI/ML Engineer & Full-Stack Developer",
+  description:
+    "Portfolio of Akshat Gupta - B.Tech CSE (AI & ML) | Building intelligent systems with Deep Learning, NLP, and Computer Vision",
+  keywords: [
+    "AI Engineer",
+    "Machine Learning",
+    "Deep Learning",
+    "NLP",
+    "Computer Vision",
+    "Portfolio",
+    "Full-Stack Developer",
+  ],
+  authors: [{ name: "Akshat Gupta" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
 };
 
