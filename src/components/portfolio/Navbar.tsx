@@ -1,55 +1,61 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet';
+} from "@/components/ui/sheet";
 
 interface NavbarProps {
   name?: string;
-  visibleSections?: string[]
+  visibleSections?: string[];
   onLogoTripleClick?: () => void;
 }
 
 function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((w) => w[0])
     .filter(Boolean)
     .slice(0, 2)
-    .join('')
+    .join("")
     .toUpperCase();
 }
 
 const allNavLinks = [
-  { id: 'about', label: 'About', href: '#about' },
-  { id: 'skills', label: 'Skills', href: '#skills' },
-  { id: 'projects', label: 'Projects', href: '#projects' },
-  { id: 'experience', label: 'Experience', href: '#experience' },
-  { id: 'education', label: 'Education', href: '#education' },
-  { id: 'achievements', label: 'Achievements', href: '#achievements' },
-  { id: 'blog', label: 'Blog', href: '#blog' },
-  { id: 'contact', label: 'Contact', href: '#contact' },
+  { id: "about", label: "About", href: "#about" },
+  { id: "skills", label: "Skills", href: "#skills" },
+  { id: "projects", label: "Projects", href: "#projects" },
+  { id: "experience", label: "Experience", href: "#experience" },
+  { id: "education", label: "Education", href: "#education" },
+  { id: "certifications", label: "Certifications", href: "#certifications" },
+  { id: "achievements", label: "Achievements", href: "#achievements" },
+  { id: "blog", label: "Blog", href: "#blog" },
+  { id: "contact", label: "Contact", href: "#contact" },
 ];
 
-export default function Navbar({ name = 'Developer', visibleSections, onLogoTripleClick }: NavbarProps) {
-
-  const navLinks = allNavLinks.filter((link) => !visibleSections || visibleSections.includes(link.id));
-  const [activeSection, setActiveSection] = useState('');
+export default function Navbar({
+  name = "Developer",
+  visibleSections,
+  onLogoTripleClick,
+}: NavbarProps) {
+  const navLinks = allNavLinks.filter(
+    (link) => !visibleSections || visibleSections.includes(link.id),
+  );
+  const [activeSection, setActiveSection] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const initials = getInitials(name);
   const nameParts = name.trim().split(/\s+/);
-  const firstName = nameParts[0] || 'Developer';
-  const lastName = nameParts.slice(1).join(' ');
+  const firstName = nameParts[0] || "Developer";
+  const lastName = nameParts.slice(1).join(" ");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,15 +74,15 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollTo = (href: string) => {
     setIsOpen(false);
     const el = document.querySelector(href);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -84,9 +90,9 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
     <motion.header
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'glass shadow-lg' : 'bg-transparent'
+        isScrolled ? "glass shadow-lg" : "bg-transparent"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -94,7 +100,7 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
         <motion.button
           onClick={() => {
             if (onLogoTripleClick) onLogoTripleClick();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -105,7 +111,8 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
             {initials}
           </div>
           <span className="hidden text-lg font-semibold text-foreground sm:block">
-            {firstName}<span className="text-[var(--neon)]">{lastName}</span>
+            {firstName}
+            <span className="text-[var(--neon)]">{lastName}</span>
           </span>
         </motion.button>
 
@@ -117,8 +124,8 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
               onClick={() => scrollTo(link.href)}
               className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-[var(--neon)] ${
                 activeSection === link.href.slice(1)
-                  ? 'text-[var(--neon)]'
-                  : 'text-muted-foreground'
+                  ? "text-[var(--neon)]"
+                  : "text-muted-foreground"
               }`}
             >
               {link.label}
@@ -126,7 +133,7 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
                 <motion.div
                   layoutId="activeNav"
                   className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-[var(--neon)]"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
             </button>
@@ -170,8 +177,8 @@ export default function Navbar({ name = 'Developer', visibleSections, onLogoTrip
                       onClick={() => scrollTo(link.href)}
                       className={`rounded-md px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-[var(--neon)]/10 hover:text-[var(--neon)] ${
                         activeSection === link.href.slice(1)
-                          ? 'bg-[var(--neon)]/10 text-[var(--neon)]'
-                          : 'text-muted-foreground'
+                          ? "bg-[var(--neon)]/10 text-[var(--neon)]"
+                          : "text-muted-foreground"
                       }`}
                     >
                       <span className="font-mono text-[var(--neon)]/50 mr-2">

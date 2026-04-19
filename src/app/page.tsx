@@ -291,6 +291,7 @@ export default function Home() {
           ...(projects.length > 0 ? ["projects"] : []),
           ...(experiences.length > 0 ? ["experience"] : []),
           ...(education.length > 0 ? ["education"] : []),
+          ...(certifications.length > 0 ? ["certifications"] : []),
           ...(achievements.length > 0 ? ["achievements"] : []),
           ...(blogPosts.length > 0 ? ["blog"] : []),
           "contact",
