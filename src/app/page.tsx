@@ -178,9 +178,9 @@ export default function Home() {
           fetch("/api/projects"),
           fetch("/api/experience"),
           fetch("/api/education"),
-          fetch("/api/certifications"),
           fetch("/api/blog?published=true"),
           fetch("/api/achievements"),
+          fetch("/api/certifications"),
           fetch("/api/hero-stats"),
         ]);
 
