@@ -1,5 +1,6 @@
 "use client";
 
+import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -47,9 +48,10 @@ interface Education {
   description?: string;
   startDate: string;
   endDate: string;
+  current: boolean;
   gpa?: string;
-  createdAt: string;
   order: number;
+  createdAt: string;
 }
 
 interface EducationForm {
@@ -59,6 +61,7 @@ interface EducationForm {
   description: string;
   startDate: string;
   endDate: string;
+  current: boolean;
   gpa: string;
   order: number;
 }
@@ -70,6 +73,7 @@ const defaultForm: EducationForm = {
   description: "",
   startDate: "",
   endDate: "",
+  current: false,
   gpa: "",
   order: 0,
 };
@@ -87,8 +91,12 @@ export default function EducationManager() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<EducationForm>({ defaultValues: defaultForm });
+
+  const isCurrent = watch("current");
 
   const fetchEducation = async () => {
     try {
@@ -125,6 +133,7 @@ export default function EducationManager() {
       description: edu.description || "",
       startDate: edu.startDate || "",
       endDate: edu.endDate || "",
+      current: edu.current || false,
       gpa: edu.gpa || "",
       order: edu.order || 0,
     });
@@ -393,11 +402,22 @@ export default function EducationManager() {
                   End Date
                 </Label>
                 <Input
-                  {...register("endDate", { required: "End date is required" })}
+                  {...register("endDate")}
                   type="month"
-                  className="bg-secondary border-border focus-visible:ring-neon/50"
+                  disabled={isCurrent}
+                  className="bg-secondary border-border focus-visible:ring-neon/50 disabled:opacity-50"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-sm text-muted-foreground">
+                Currently studying here
+              </Label>
+              <Switch
+                checked={isCurrent}
+                onCheckedChange={(checked) => setValue("current", checked)}
+              />
             </div>
 
             <div className="space-y-2">
