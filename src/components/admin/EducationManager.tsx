@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
 import {
   GraduationCap,
   Plus,
@@ -11,21 +11,21 @@ import {
   Calendar,
   Award,
   Loader2,
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,9 +35,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { useAdminStore } from '@/store/admin-store';
-import { toast } from 'sonner';
+} from "@/components/ui/alert-dialog";
+import { useAdminStore } from "@/store/admin-store";
+import { toast } from "sonner";
 
 interface Education {
   id: string;
@@ -49,6 +49,7 @@ interface Education {
   endDate: string;
   gpa?: string;
   createdAt: string;
+  order: number;
 }
 
 interface EducationForm {
@@ -59,16 +60,18 @@ interface EducationForm {
   startDate: string;
   endDate: string;
   gpa: string;
+  order: number;
 }
 
 const defaultForm: EducationForm = {
-  institution: '',
-  degree: '',
-  field: '',
-  description: '',
-  startDate: '',
-  endDate: '',
-  gpa: '',
+  institution: "",
+  degree: "",
+  field: "",
+  description: "",
+  startDate: "",
+  endDate: "",
+  gpa: "",
+  order: 0,
 };
 
 export default function EducationManager() {
@@ -89,15 +92,15 @@ export default function EducationManager() {
 
   const fetchEducation = async () => {
     try {
-      const res = await fetch('/api/education', {
-        headers: { Authorization: 'Bearer ' + token },
+      const res = await fetch("/api/education", {
+        headers: { Authorization: "Bearer " + token },
       });
       if (res.ok) {
         const data = await res.json();
         setEducation(Array.isArray(data) ? data : data.education || []);
       }
     } catch {
-      toast.error('Failed to load education');
+      toast.error("Failed to load education");
     } finally {
       setLoading(false);
     }
@@ -119,10 +122,11 @@ export default function EducationManager() {
       institution: edu.institution,
       degree: edu.degree,
       field: edu.field,
-      description: edu.description || '',
-      startDate: edu.startDate || '',
-      endDate: edu.endDate || '',
-      gpa: edu.gpa || '',
+      description: edu.description || "",
+      startDate: edu.startDate || "",
+      endDate: edu.endDate || "",
+      gpa: edu.gpa || "",
+      order: edu.order || 0,
     });
     setDialogOpen(true);
   };
@@ -130,25 +134,27 @@ export default function EducationManager() {
   const onSubmit = async (data: EducationForm) => {
     setSaving(true);
     try {
-      const url = editingId ? `/api/education?id=${editingId}` : '/api/education';
-      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId
+        ? `/api/education?id=${editingId}`
+        : "/api/education";
+      const method = editingId ? "PUT" : "POST";
       const body = editingId ? { ...data, id: editingId } : data;
 
       const res = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error('Failed to save education');
-      toast.success(editingId ? 'Education updated' : 'Education created');
+      if (!res.ok) throw new Error("Failed to save education");
+      toast.success(editingId ? "Education updated" : "Education created");
       setDialogOpen(false);
       fetchEducation();
     } catch {
-      toast.error('Failed to save education');
+      toast.error("Failed to save education");
     } finally {
       setSaving(false);
     }
@@ -158,24 +164,24 @@ export default function EducationManager() {
     if (!deleteId) return;
     try {
       const res = await fetch(`/api/education?id=${deleteId}`, {
-        method: 'DELETE',
-        headers: { Authorization: 'Bearer ' + token },
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
       });
-      if (!res.ok) throw new Error('Failed to delete education');
-      toast.success('Education deleted');
+      if (!res.ok) throw new Error("Failed to delete education");
+      toast.success("Education deleted");
       setDeleteId(null);
       fetchEducation();
     } catch {
-      toast.error('Failed to delete education');
+      toast.error("Failed to delete education");
     }
   };
 
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
+    if (!dateStr) return "";
     try {
-      return new Date(dateStr).toLocaleDateString('en-US', {
-        month: 'short',
-        year: 'numeric',
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
       });
     } catch {
       return dateStr;
@@ -208,7 +214,10 @@ export default function EducationManager() {
             Manage your educational background
           </p>
         </div>
-        <Button onClick={openCreate} className="bg-neon text-background hover:bg-neon-dim gap-2">
+        <Button
+          onClick={openCreate}
+          className="bg-neon text-background hover:bg-neon-dim gap-2"
+        >
           <Plus className="h-4 w-4" />
           Add Education
         </Button>
@@ -219,7 +228,9 @@ export default function EducationManager() {
         <Card className="bg-card/50 border-border">
           <CardContent className="p-12 text-center">
             <GraduationCap className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No education entries yet. Add your academic background!</p>
+            <p className="text-muted-foreground">
+              No education entries yet. Add your academic background!
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -240,8 +251,12 @@ export default function EducationManager() {
                           <GraduationCap className="h-5 w-5 text-purple-400" />
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-semibold text-foreground text-sm truncate">{edu.institution}</h3>
-                          <p className="text-xs text-muted-foreground">{edu.degree} — {edu.field}</p>
+                          <h3 className="font-semibold text-foreground text-sm truncate">
+                            {edu.institution}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            {edu.degree} — {edu.field}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -279,7 +294,9 @@ export default function EducationManager() {
                   </div>
 
                   {edu.description && (
-                    <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{edu.description}</p>
+                    <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
+                      {edu.description}
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -293,45 +310,65 @@ export default function EducationManager() {
         <DialogContent className="bg-card border-border max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">
-              {editingId ? 'Edit Education' : 'New Education'}
+              {editingId ? "Edit Education" : "New Education"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Institution</Label>
+              <Label className="text-sm text-muted-foreground">
+                Institution
+              </Label>
               <Input
-                {...register('institution', { required: 'Institution is required' })}
+                {...register("institution", {
+                  required: "Institution is required",
+                })}
                 placeholder="Stanford University"
                 className="bg-secondary border-border focus-visible:ring-neon/50"
               />
-              {errors.institution && <p className="text-destructive text-xs">{errors.institution.message}</p>}
+              {errors.institution && (
+                <p className="text-destructive text-xs">
+                  {errors.institution.message}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Degree</Label>
                 <Input
-                  {...register('degree', { required: 'Degree is required' })}
+                  {...register("degree", { required: "Degree is required" })}
                   placeholder="Bachelor of Science"
                   className="bg-secondary border-border focus-visible:ring-neon/50"
                 />
-                {errors.degree && <p className="text-destructive text-xs">{errors.degree.message}</p>}
+                {errors.degree && (
+                  <p className="text-destructive text-xs">
+                    {errors.degree.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">Field of Study</Label>
+                <Label className="text-sm text-muted-foreground">
+                  Field of Study
+                </Label>
                 <Input
-                  {...register('field', { required: 'Field is required' })}
+                  {...register("field", { required: "Field is required" })}
                   placeholder="Computer Science"
                   className="bg-secondary border-border focus-visible:ring-neon/50"
                 />
-                {errors.field && <p className="text-destructive text-xs">{errors.field.message}</p>}
+                {errors.field && (
+                  <p className="text-destructive text-xs">
+                    {errors.field.message}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Description</Label>
+              <Label className="text-sm text-muted-foreground">
+                Description
+              </Label>
               <Textarea
-                {...register('description')}
+                {...register("description")}
                 placeholder="Notable achievements, activities..."
                 rows={3}
                 className="bg-secondary border-border focus-visible:ring-neon/50 resize-none"
@@ -340,17 +377,23 @@ export default function EducationManager() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">Start Date</Label>
+                <Label className="text-sm text-muted-foreground">
+                  Start Date
+                </Label>
                 <Input
-                  {...register('startDate', { required: 'Start date is required' })}
+                  {...register("startDate", {
+                    required: "Start date is required",
+                  })}
                   type="month"
                   className="bg-secondary border-border focus-visible:ring-neon/50"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">End Date</Label>
+                <Label className="text-sm text-muted-foreground">
+                  End Date
+                </Label>
                 <Input
-                  {...register('endDate', { required: 'End date is required' })}
+                  {...register("endDate", { required: "End date is required" })}
                   type="month"
                   className="bg-secondary border-border focus-visible:ring-neon/50"
                 />
@@ -358,21 +401,44 @@ export default function EducationManager() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">GPA (optional)</Label>
+              <Label className="text-sm text-muted-foreground">
+                GPA (optional)
+              </Label>
               <Input
-                {...register('gpa')}
+                {...register("gpa")}
                 placeholder="3.8 / 4.0"
                 className="bg-secondary border-border focus-visible:ring-neon/50"
               />
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-sm text-muted-foreground">
+                Display Order (0 = first)
+              </Label>
+              <Input
+                {...register("order", { valueAsNumber: true })}
+                type="number"
+                min={0}
+                placeholder="0"
+                className="bg-secondary border-border focus-visible:ring-neon/50"
+              />
+            </div>
+
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={saving} className="bg-neon text-background hover:bg-neon-dim gap-2">
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-neon text-background hover:bg-neon-dim gap-2"
+              >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {editingId ? 'Update' : 'Create'}
+                {editingId ? "Update" : "Create"}
               </Button>
             </DialogFooter>
           </form>
@@ -385,7 +451,8 @@ export default function EducationManager() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Education</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this education entry? This action cannot be undone.
+              Are you sure you want to delete this education entry? This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
