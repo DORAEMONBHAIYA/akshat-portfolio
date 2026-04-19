@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
+import MarkdownEditor from "@/components/ui/markdown-editor";
+import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
 import {
   FileText,
   Plus,
@@ -13,15 +14,15 @@ import {
   Search,
   Calendar,
   Loader2,
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -29,14 +30,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,9 +47,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { useAdminStore } from '@/store/admin-store';
-import { toast } from 'sonner';
+} from "@/components/ui/alert-dialog";
+import { useAdminStore } from "@/store/admin-store";
+import { toast } from "sonner";
 
 interface BlogPost {
   id: string;
@@ -73,27 +74,27 @@ interface BlogForm {
 }
 
 const defaultForm: BlogForm = {
-  title: '',
-  slug: '',
-  content: '',
-  excerpt: '',
-  tags: '',
+  title: "",
+  slug: "",
+  content: "",
+  excerpt: "",
+  tags: "",
   published: false,
-  createdAt: '',
+  createdAt: "",
 };
 
 function generateSlug(title: string): string {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export default function BlogManager() {
   const token = useAdminStore((s) => s.token);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -109,29 +110,29 @@ export default function BlogManager() {
     formState: { errors },
   } = useForm<BlogForm>({ defaultValues: defaultForm });
 
-  const title = watch('title');
+  const title = watch("title");
 
   // Auto-generate slug when editing a new post
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!editingId) {
-        setValue('slug', generateSlug(e.target.value));
+        setValue("slug", generateSlug(e.target.value));
       }
     },
-    [editingId, setValue]
+    [editingId, setValue],
   );
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch('/api/blog', {
-        headers: { Authorization: 'Bearer ' + token },
+      const res = await fetch("/api/blog", {
+        headers: { Authorization: "Bearer " + token },
       });
       if (res.ok) {
         const data = await res.json();
         setPosts(Array.isArray(data) ? data : data.posts || []);
       }
     } catch {
-      toast.error('Failed to load blog posts');
+      toast.error("Failed to load blog posts");
     } finally {
       setLoading(false);
     }
@@ -143,25 +144,25 @@ export default function BlogManager() {
 
   const openCreate = () => {
     setEditingId(null);
-    reset({ ...defaultForm, createdAt: '' });
+    reset({ ...defaultForm, createdAt: "" });
     setDialogOpen(true);
   };
 
   const openEdit = (post: BlogPost) => {
     setEditingId(post.id);
     // Format createdAt to datetime-local format (YYYY-MM-DDTHH:mm)
-    let dateStr = '';
+    let dateStr = "";
     if (post.createdAt) {
       const d = new Date(post.createdAt);
-      const pad = (n: number) => String(n).padStart(2, '0');
+      const pad = (n: number) => String(n).padStart(2, "0");
       dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
     reset({
       title: post.title,
       slug: post.slug,
-      content: post.content || '',
-      excerpt: post.excerpt || '',
-      tags: post.tags || '',
+      content: post.content || "",
+      excerpt: post.excerpt || "",
+      tags: post.tags || "",
       published: post.published,
       createdAt: dateStr,
     });
@@ -171,25 +172,25 @@ export default function BlogManager() {
   const onSubmit = async (data: BlogForm) => {
     setSaving(true);
     try {
-      const url = editingId ? `/api/blog?id=${editingId}` : '/api/blog';
-      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId ? `/api/blog?id=${editingId}` : "/api/blog";
+      const method = editingId ? "PUT" : "POST";
       const body = editingId ? { ...data, id: editingId } : data;
 
       const res = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error('Failed to save post');
-      toast.success(editingId ? 'Post updated' : 'Post created');
+      if (!res.ok) throw new Error("Failed to save post");
+      toast.success(editingId ? "Post updated" : "Post created");
       setDialogOpen(false);
       fetchPosts();
     } catch {
-      toast.error('Failed to save post');
+      toast.error("Failed to save post");
     } finally {
       setSaving(false);
     }
@@ -199,18 +200,18 @@ export default function BlogManager() {
     setTogglingId(post.id);
     try {
       const res = await fetch(`/api/blog?id=${post.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ published: !post.published }),
       });
-      if (!res.ok) throw new Error('Failed to toggle publish');
-      toast.success(post.published ? 'Post unpublished' : 'Post published');
+      if (!res.ok) throw new Error("Failed to toggle publish");
+      toast.success(post.published ? "Post unpublished" : "Post published");
       fetchPosts();
     } catch {
-      toast.error('Failed to toggle publish status');
+      toast.error("Failed to toggle publish status");
     } finally {
       setTogglingId(null);
     }
@@ -220,24 +221,24 @@ export default function BlogManager() {
     if (!deleteId) return;
     try {
       const res = await fetch(`/api/blog?id=${deleteId}`, {
-        method: 'DELETE',
-        headers: { Authorization: 'Bearer ' + token },
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
       });
-      if (!res.ok) throw new Error('Failed to delete post');
-      toast.success('Post deleted');
+      if (!res.ok) throw new Error("Failed to delete post");
+      toast.success("Post deleted");
       setDeleteId(null);
       fetchPosts();
     } catch {
-      toast.error('Failed to delete post');
+      toast.error("Failed to delete post");
     }
   };
 
   const formatDate = (dateStr: string) => {
     try {
-      return new Date(dateStr).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     } catch {
       return dateStr;
@@ -247,7 +248,7 @@ export default function BlogManager() {
   const filtered = posts.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.slug.toLowerCase().includes(search.toLowerCase())
+      p.slug.toLowerCase().includes(search.toLowerCase()),
   );
 
   if (loading) {
@@ -277,7 +278,10 @@ export default function BlogManager() {
             Manage your blog posts
           </p>
         </div>
-        <Button onClick={openCreate} className="bg-neon text-background hover:bg-neon-dim gap-2">
+        <Button
+          onClick={openCreate}
+          className="bg-neon text-background hover:bg-neon-dim gap-2"
+        >
           <Plus className="h-4 w-4" />
           New Post
         </Button>
@@ -300,7 +304,9 @@ export default function BlogManager() {
           <CardContent className="p-12 text-center">
             <FileText className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" />
             <p className="text-muted-foreground">
-              {search ? 'No posts match your search' : 'No blog posts yet. Write your first post!'}
+              {search
+                ? "No posts match your search"
+                : "No blog posts yet. Write your first post!"}
             </p>
           </CardContent>
         </Card>
@@ -312,12 +318,24 @@ export default function BlogManager() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
-                    <TableHead className="text-muted-foreground">Title</TableHead>
-                    <TableHead className="text-muted-foreground">Slug</TableHead>
-                    <TableHead className="text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-muted-foreground">Tags</TableHead>
-                    <TableHead className="text-muted-foreground">Date</TableHead>
-                    <TableHead className="text-muted-foreground text-right">Actions</TableHead>
+                    <TableHead className="text-muted-foreground">
+                      Title
+                    </TableHead>
+                    <TableHead className="text-muted-foreground">
+                      Slug
+                    </TableHead>
+                    <TableHead className="text-muted-foreground">
+                      Status
+                    </TableHead>
+                    <TableHead className="text-muted-foreground">
+                      Tags
+                    </TableHead>
+                    <TableHead className="text-muted-foreground">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-muted-foreground text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -329,7 +347,9 @@ export default function BlogManager() {
                       transition={{ delay: index * 0.03 }}
                       className="border-border hover:bg-secondary/50"
                     >
-                      <TableCell className="font-medium">{post.title}</TableCell>
+                      <TableCell className="font-medium">
+                        {post.title}
+                      </TableCell>
                       <TableCell className="text-muted-foreground text-sm font-mono">
                         /{post.slug}
                       </TableCell>
@@ -343,8 +363,8 @@ export default function BlogManager() {
                             variant="outline"
                             className={`text-[10px] px-2 py-0 cursor-pointer transition-colors ${
                               post.published
-                                ? 'bg-neon/10 text-neon border-neon/20'
-                                : 'bg-secondary text-muted-foreground'
+                                ? "bg-neon/10 text-neon border-neon/20"
+                                : "bg-secondary text-muted-foreground"
                             }`}
                           >
                             {togglingId === post.id ? (
@@ -354,17 +374,25 @@ export default function BlogManager() {
                             ) : (
                               <EyeOff className="h-3 w-3 mr-1" />
                             )}
-                            {post.published ? 'Published' : 'Draft'}
+                            {post.published ? "Published" : "Draft"}
                           </Badge>
                         </button>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {(post.tags || '').split(',').filter(Boolean).slice(0, 2).map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
-                              {tag.trim()}
-                            </Badge>
-                          ))}
+                          {(post.tags || "")
+                            .split(",")
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="text-[10px] px-1.5 py-0"
+                              >
+                                {tag.trim()}
+                              </Badge>
+                            ))}
                         </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
@@ -416,25 +444,36 @@ export default function BlogManager() {
                             variant="outline"
                             className={`text-[10px] px-1.5 py-0 ${
                               post.published
-                                ? 'bg-neon/10 text-neon border-neon/20'
-                                : 'bg-secondary text-muted-foreground'
+                                ? "bg-neon/10 text-neon border-neon/20"
+                                : "bg-secondary text-muted-foreground"
                             }`}
                           >
-                            {post.published ? 'Published' : 'Draft'}
+                            {post.published ? "Published" : "Draft"}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground font-mono mt-1">/{post.slug}</p>
+                        <p className="text-xs text-muted-foreground font-mono mt-1">
+                          /{post.slug}
+                        </p>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
                           <Calendar className="h-3 w-3" />
                           {formatDate(post.createdAt)}
                         </div>
-                        {(post.tags || '').split(',').filter(Boolean).length > 0 && (
+                        {(post.tags || "").split(",").filter(Boolean).length >
+                          0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {(post.tags || '').split(',').filter(Boolean).slice(0, 3).map((tag) => (
-                              <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
-                                {tag.trim()}
-                              </Badge>
-                            ))}
+                            {(post.tags || "")
+                              .split(",")
+                              .filter(Boolean)
+                              .slice(0, 3)
+                              .map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="secondary"
+                                  className="text-[10px] px-1.5 py-0"
+                                >
+                                  {tag.trim()}
+                                </Badge>
+                              ))}
                           </div>
                         )}
                       </div>
@@ -470,85 +509,106 @@ export default function BlogManager() {
         <DialogContent className="bg-card border-border max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">
-              {editingId ? 'Edit Post' : 'New Post'}
+              {editingId ? "Edit Post" : "New Post"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">Title</Label>
               <Input
-                {...register('title', { required: 'Title is required' })}
+                {...register("title", { required: "Title is required" })}
                 onChange={handleTitleChange}
                 placeholder="My Blog Post"
                 className="bg-secondary border-border focus-visible:ring-neon/50"
               />
-              {errors.title && <p className="text-destructive text-xs">{errors.title.message}</p>}
+              {errors.title && (
+                <p className="text-destructive text-xs">
+                  {errors.title.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">Slug</Label>
               <Input
-                {...register('slug', { required: 'Slug is required' })}
+                {...register("slug", { required: "Slug is required" })}
                 placeholder="my-blog-post"
                 className="bg-secondary border-border focus-visible:ring-neon/50 font-mono text-sm"
               />
-              {errors.slug && <p className="text-destructive text-xs">{errors.slug.message}</p>}
+              {errors.slug && (
+                <p className="text-destructive text-xs">
+                  {errors.slug.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">Excerpt</Label>
               <Textarea
-                {...register('excerpt')}
+                {...register("excerpt")}
                 placeholder="Short summary of the post..."
                 rows={2}
                 className="bg-secondary border-border focus-visible:ring-neon/50 resize-none"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Content</Label>
-              <Textarea
-                {...register('content')}
-                placeholder="Write your blog post content here... (Markdown supported)"
-                rows={10}
-                className="bg-secondary border-border focus-visible:ring-neon/50 resize-none font-mono text-sm"
-              />
-            </div>
+            <MarkdownEditor
+              value={watch("content") || ""}
+              onChange={(val) => setValue("content", val)}
+              placeholder="Write your blog post in Markdown...&#10;&#10;## Subheading&#10;Use **bold** and *italic* for formatting&#10;- Bullet points&#10;1. Numbered lists"
+            />
 
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Tags (comma separated)</Label>
+              <Label className="text-sm text-muted-foreground">
+                Tags (comma separated)
+              </Label>
               <Input
-                {...register('tags')}
+                {...register("tags")}
                 placeholder="react, nextjs, typescript"
                 className="bg-secondary border-border focus-visible:ring-neon/50"
               />
             </div>
 
             <div className="flex items-center justify-between py-2">
-              <Label className="text-sm text-muted-foreground">Publish immediately</Label>
+              <Label className="text-sm text-muted-foreground">
+                Publish immediately
+              </Label>
               <Switch
-                {...register('published')}
-                onCheckedChange={(checked) => setValue('published', checked)}
+                {...register("published")}
+                onCheckedChange={(checked) => setValue("published", checked)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Post Date &amp; Time</Label>
+              <Label className="text-sm text-muted-foreground">
+                Post Date &amp; Time
+              </Label>
               <Input
-                {...register('createdAt')}
+                {...register("createdAt")}
                 type="datetime-local"
                 className="bg-secondary border-border focus-visible:ring-neon/50"
               />
-              <p className="text-[11px] text-muted-foreground">Leave empty to use current date &amp; time. Select a past date for backdated posts.</p>
+              <p className="text-[11px] text-muted-foreground">
+                Leave empty to use current date &amp; time. Select a past date
+                for backdated posts.
+              </p>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={saving} className="bg-neon text-background hover:bg-neon-dim gap-2">
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-neon text-background hover:bg-neon-dim gap-2"
+              >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {editingId ? 'Update' : 'Create'}
+                {editingId ? "Update" : "Create"}
               </Button>
             </DialogFooter>
           </form>
@@ -561,7 +621,8 @@ export default function BlogManager() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Post</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this blog post? This action cannot be undone.
+              Are you sure you want to delete this blog post? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

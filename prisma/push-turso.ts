@@ -31,6 +31,7 @@ async function pushSchema() {
     `CREATE TABLE IF NOT EXISTS "HeroStat" ("id" TEXT NOT NULL PRIMARY KEY, "label" TEXT NOT NULL DEFAULT '', "value" TEXT NOT NULL DEFAULT '', "icon" TEXT NOT NULL DEFAULT '', "order" INTEGER NOT NULL DEFAULT 0, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" DATETIME NOT NULL)`,
     `CREATE TABLE IF NOT EXISTS "AdminUser" ("id" TEXT NOT NULL PRIMARY KEY, "username" TEXT NOT NULL, "password" TEXT NOT NULL, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
     `CREATE UNIQUE INDEX IF NOT EXISTS "AdminUser_username_key" ON "AdminUser"("username")`,
+    `CREATE TABLE IF NOT EXISTS "Certification" ("id" TEXT NOT NULL PRIMARY KEY, "title" TEXT NOT NULL, "issuer" TEXT NOT NULL DEFAULT '', "description" TEXT NOT NULL DEFAULT '', "date" TEXT NOT NULL DEFAULT '', "credentialUrl" TEXT NOT NULL DEFAULT '', "credentialId" TEXT NOT NULL DEFAULT '', "order" INTEGER NOT NULL DEFAULT 0, "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" DATETIME NOT NULL)`,
   ];
 
   for (const sql of statements) {

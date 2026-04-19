@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { lazy, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   User,
@@ -18,19 +18,20 @@ import {
   Tag,
   Trophy,
   BarChart3,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+  Award,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,40 +39,42 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useAdminStore } from '@/store/admin-store';
-import { useIsMobile } from '@/hooks/use-mobile';
+} from "@/components/ui/breadcrumb";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminStore } from "@/store/admin-store";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Lazy load section components
-const Dashboard = lazy(() => import('./Dashboard'));
-const ProfileEditor = lazy(() => import('./ProfileEditor'));
-const ProjectsManager = lazy(() => import('./ProjectsManager'));
-const SkillsManager = lazy(() => import('./SkillsManager'));
-const ExperienceManager = lazy(() => import('./ExperienceManager'));
-const EducationManager = lazy(() => import('./EducationManager'));
-const BlogManager = lazy(() => import('./BlogManager'));
-const ContactManager = lazy(() => import('./ContactManager'));
-const CategoryManager = lazy(() => import('./CategoryManager'));
-const AchievementManager = lazy(() => import('./AchievementManager'));
-const HeroStatsManager = lazy(() => import('./HeroStatsManager'));
+const Dashboard = lazy(() => import("./Dashboard"));
+const ProfileEditor = lazy(() => import("./ProfileEditor"));
+const ProjectsManager = lazy(() => import("./ProjectsManager"));
+const SkillsManager = lazy(() => import("./SkillsManager"));
+const ExperienceManager = lazy(() => import("./ExperienceManager"));
+const EducationManager = lazy(() => import("./EducationManager"));
+const BlogManager = lazy(() => import("./BlogManager"));
+const ContactManager = lazy(() => import("./ContactManager"));
+const CategoryManager = lazy(() => import("./CategoryManager"));
+const AchievementManager = lazy(() => import("./AchievementManager"));
+const HeroStatsManager = lazy(() => import("./HeroStatsManager"));
+const CertificationsManager = lazy(() => import("./CertificationsManager"));
 
 interface AdminLayoutProps {
   onBack: () => void;
 }
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'projects', label: 'Projects', icon: FolderKanban },
-  { id: 'hero-stats', label: 'Hero Stats', icon: BarChart3 },
-  { id: 'categories', label: 'Categories', icon: Tag },
-  { id: 'skills', label: 'Skills', icon: Cpu },
-  { id: 'experience', label: 'Experience', icon: Briefcase },
-  { id: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'achievements', label: 'Achievements', icon: Trophy },
-  { id: 'blog', label: 'Blog', icon: FileText },
-  { id: 'messages', label: 'Messages', icon: Mail },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "profile", label: "Profile", icon: User },
+  { id: "projects", label: "Projects", icon: FolderKanban },
+  { id: "hero-stats", label: "Hero Stats", icon: BarChart3 },
+  { id: "categories", label: "Categories", icon: Tag },
+  { id: "skills", label: "Skills", icon: Cpu },
+  { id: "experience", label: "Experience", icon: Briefcase },
+  { id: "education", label: "Education", icon: GraduationCap },
+  { id: "certifications", label: "Certifications", icon: Award },
+  { id: "achievements", label: "Achievements", icon: Trophy },
+  { id: "blog", label: "Blog", icon: FileText },
+  { id: "messages", label: "Messages", icon: Mail },
 ];
 
 function SectionLoader() {
@@ -107,7 +110,9 @@ function SidebarNav({
           <Settings className="h-5 w-5 text-neon" />
         </div>
         <div>
-          <h1 className="font-semibold text-foreground text-sm">Portfolio Admin</h1>
+          <h1 className="font-semibold text-foreground text-sm">
+            Portfolio Admin
+          </h1>
           <p className="text-xs text-muted-foreground">Management Panel</p>
         </div>
       </div>
@@ -128,11 +133,11 @@ function SidebarNav({
                 onClick={() => onNavigate(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
                   isActive
-                    ? 'bg-neon/10 text-neon border border-neon/20'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? "bg-neon/10 text-neon border border-neon/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-neon' : ''}`} />
+                <Icon className={`h-4 w-4 ${isActive ? "text-neon" : ""}`} />
                 <span className="flex-1 text-left">{item.label}</span>
                 {isActive && (
                   <motion.div
@@ -153,7 +158,7 @@ function SidebarNav({
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-8 w-8 border border-neon/20">
             <AvatarFallback className="bg-neon/10 text-neon text-xs font-mono">
-              {username?.charAt(0).toUpperCase() || 'A'}
+              {username?.charAt(0).toUpperCase() || "A"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
@@ -186,27 +191,29 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
 
   const renderSection = () => {
     switch (activeSection) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'profile':
+      case "profile":
         return <ProfileEditor />;
-      case 'projects':
+      case "projects":
         return <ProjectsManager />;
-      case 'hero-stats':
+      case "hero-stats":
         return <HeroStatsManager />;
-      case 'categories':
+      case "categories":
         return <CategoryManager />;
-      case 'skills':
+      case "skills":
         return <SkillsManager />;
-      case 'experience':
+      case "experience":
         return <ExperienceManager />;
-      case 'education':
+      case "education":
         return <EducationManager />;
-      case 'achievements':
+      case "certifications":
+        return <CertificationsManager />;
+      case "achievements":
         return <AchievementManager />;
-      case 'blog':
+      case "blog":
         return <BlogManager />;
-      case 'messages':
+      case "messages":
         return <ContactManager />;
       default:
         return <Dashboard />;
@@ -229,7 +236,7 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
         <motion.aside
           initial={{ x: -280 }}
           animate={{ x: 0 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="w-[280px] flex-shrink-0 border-r border-border bg-card/50 backdrop-blur-sm"
         >
           {sidebarContent}
@@ -249,7 +256,10 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] p-0 bg-card border-border">
+                <SheetContent
+                  side="left"
+                  className="w-[280px] p-0 bg-card border-border"
+                >
                   {sidebarContent}
                 </SheetContent>
               </Sheet>
@@ -275,7 +285,7 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
                 </BreadcrumbSeparator>
                 <BreadcrumbItem>
                   <BreadcrumbPage className="text-foreground">
-                    {activeItem?.label || 'Dashboard'}
+                    {activeItem?.label || "Dashboard"}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -287,17 +297,23 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
             {!isMobile && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 h-9 px-3">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 h-9 px-3"
+                  >
                     <Avatar className="h-7 w-7 border border-neon/20">
                       <AvatarFallback className="bg-neon/10 text-neon text-xs font-mono">
-                        {username?.charAt(0).toUpperCase() || 'A'}
+                        {username?.charAt(0).toUpperCase() || "A"}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-sm hidden lg:inline">{username}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="text-destructive focus:text-destructive"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </DropdownMenuItem>
@@ -307,7 +323,12 @@ export default function AdminLayout({ onBack }: AdminLayoutProps) {
 
             {/* Mobile logout */}
             {isMobile && (
-              <Button variant="ghost" size="icon" onClick={logout} className="text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className="text-muted-foreground"
+              >
                 <LogOut className="h-5 w-5" />
               </Button>
             )}

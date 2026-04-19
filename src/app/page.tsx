@@ -1,22 +1,23 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAdminStore } from '@/store/admin-store';
-import { useSecretAdmin } from '@/hooks/use-secret-admin';
-import Navbar from '@/components/portfolio/Navbar';
-import HeroSection from '@/components/portfolio/HeroSection';
-import AboutSection from '@/components/portfolio/AboutSection';
-import SkillsSection from '@/components/portfolio/SkillsSection';
-import ProjectsSection from '@/components/portfolio/ProjectsSection';
-import ExperienceSection from '@/components/portfolio/ExperienceSection';
-import EducationSection from '@/components/portfolio/EducationSection';
-import BlogSection from '@/components/portfolio/BlogSection';
-import AchievementSection from '@/components/portfolio/AchievementSection';
-import ContactSection from '@/components/portfolio/ContactSection';
-import Footer from '@/components/portfolio/Footer';
-import AdminLogin from '@/components/admin/AdminLogin';
-import AdminLayout from '@/components/admin/AdminLayout';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect, useCallback } from "react";
+import { useAdminStore } from "@/store/admin-store";
+import { useSecretAdmin } from "@/hooks/use-secret-admin";
+import Navbar from "@/components/portfolio/Navbar";
+import HeroSection from "@/components/portfolio/HeroSection";
+import AboutSection from "@/components/portfolio/AboutSection";
+import SkillsSection from "@/components/portfolio/SkillsSection";
+import ProjectsSection from "@/components/portfolio/ProjectsSection";
+import ExperienceSection from "@/components/portfolio/ExperienceSection";
+import EducationSection from "@/components/portfolio/EducationSection";
+import CertificationsSection from "@/components/portfolio/CertificationsSection";
+import BlogSection from "@/components/portfolio/BlogSection";
+import AchievementSection from "@/components/portfolio/AchievementSection";
+import ContactSection from "@/components/portfolio/ContactSection";
+import Footer from "@/components/portfolio/Footer";
+import AdminLogin from "@/components/admin/AdminLogin";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProfileData {
   name: string;
@@ -68,6 +69,16 @@ interface EducationData {
   gpa: string;
 }
 
+interface CertificationData {
+  id: string;
+  title: string;
+  issuer: string;
+  description: string;
+  date: string;
+  credentialUrl: string;
+  credentialId: string;
+}
+
 interface BlogData {
   id: string;
   title: string;
@@ -101,10 +112,10 @@ interface HeroStatData {
   order: number;
 }
 
-type ViewMode = 'portfolio' | 'admin';
+type ViewMode = "portfolio" | "admin";
 
 export default function Home() {
-  const [viewMode, setViewMode] = useState<ViewMode>('portfolio');
+  const [viewMode, setViewMode] = useState<ViewMode>("portfolio");
   const [loading, setLoading] = useState(true);
 
   // Portfolio data
@@ -113,6 +124,7 @@ export default function Home() {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [experiences, setExperiences] = useState<ExperienceData[]>([]);
   const [education, setEducation] = useState<EducationData[]>([]);
+  const [certifications, setCertifications] = useState<CertificationData[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogData[]>([]);
   const [achievements, setAchievements] = useState<AchievementData[]>([]);
   const [heroStats, setHeroStats] = useState<HeroStatData[]>([]);
@@ -124,22 +136,22 @@ export default function Home() {
 
   // Restore admin session on mount
   useEffect(() => {
-    const savedToken = localStorage.getItem('admin_token');
-    const savedUsername = localStorage.getItem('admin_username');
+    const savedToken = localStorage.getItem("admin_token");
+    const savedUsername = localStorage.getItem("admin_username");
     if (savedToken && savedUsername) {
-      fetch('/api/auth', {
-        method: 'POST',
+      fetch("/api/auth", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + savedToken,
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + savedToken,
         },
-        body: JSON.stringify({ action: 'validate' }),
+        body: JSON.stringify({ action: "validate" }),
       }).then((res) => {
         if (res.ok) {
           setAuth(true, savedToken, savedUsername);
         } else {
-          localStorage.removeItem('admin_token');
-          localStorage.removeItem('admin_username');
+          localStorage.removeItem("admin_token");
+          localStorage.removeItem("admin_username");
           setAuth(false, null, null);
         }
       });
@@ -150,40 +162,62 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [profileRes, skillsRes, projectsRes, expRes, eduRes, blogRes, achievementsRes, heroStatsRes] =
-          await Promise.all([
-            fetch('/api/profile'),
-            fetch('/api/skills'),
-            fetch('/api/projects'),
-            fetch('/api/experience'),
-            fetch('/api/education'),
-            fetch('/api/blog?published=true'),
-            fetch('/api/achievements'),
-            fetch('/api/hero-stats'),
-          ]);
+        const [
+          profileRes,
+          skillsRes,
+          projectsRes,
+          expRes,
+          eduRes,
+          blogRes,
+          achievementsRes,
+          certificationsRes,
+          heroStatsRes,
+        ] = await Promise.all([
+          fetch("/api/profile"),
+          fetch("/api/skills"),
+          fetch("/api/projects"),
+          fetch("/api/experience"),
+          fetch("/api/education"),
+          fetch("/api/certifications"),
+          fetch("/api/blog?published=true"),
+          fetch("/api/achievements"),
+          fetch("/api/hero-stats"),
+        ]);
 
-        const [profileData, skillsData, projectsData, expData, eduData, blogData, achievementsData, heroStatsData] =
-          await Promise.all([
-            profileRes.json(),
-            skillsRes.json(),
-            projectsRes.json(),
-            expRes.json(),
-            eduRes.json(),
-            blogRes.json(),
-            achievementsRes.json(),
-            heroStatsRes.json(),
-          ]);
+        const [
+          profileData,
+          skillsData,
+          projectsData,
+          expData,
+          eduData,
+          certificationsData,
+          blogData,
+          achievementsData,
+          heroStatsData,
+        ] = await Promise.all([
+          profileRes.json(),
+          skillsRes.json(),
+          projectsRes.json(),
+          expRes.json(),
+          eduRes.json(),
+          certificationsRes.json(),
+          blogRes.json(),
+          achievementsRes.json(),
+          heroStatsRes.json(),
+        ]);
 
         if (profileData && !profileData.error) setProfile(profileData);
         if (Array.isArray(skillsData)) setSkills(skillsData);
         if (Array.isArray(projectsData)) setProjects(projectsData);
         if (Array.isArray(expData)) setExperiences(expData);
         if (Array.isArray(eduData)) setEducation(eduData);
+        if (Array.isArray(certificationsData))
+          setCertifications(certificationsData);
         if (Array.isArray(blogData)) setBlogPosts(blogData);
         if (Array.isArray(achievementsData)) setAchievements(achievementsData);
         if (Array.isArray(heroStatsData)) setHeroStats(heroStatsData);
       } catch (err) {
-        console.error('Failed to fetch portfolio data:', err);
+        console.error("Failed to fetch portfolio data:", err);
       } finally {
         setLoading(false);
       }
@@ -193,20 +227,20 @@ export default function Home() {
   }, []);
 
   const handleAdminClick = useCallback(() => {
-    setViewMode('admin');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setViewMode("admin");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const handleBackToPortfolio = useCallback(() => {
-    setViewMode('portfolio');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setViewMode("portfolio");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   // Secret admin access: Konami Code, Ctrl+Shift+A, #admin URL hash
   const { handleTripleClick } = useSecretAdmin(handleAdminClick);
 
   // Admin view
-  if (viewMode === 'admin') {
+  if (viewMode === "admin") {
     if (!isAuth || !token) {
       return <AdminLogin onBack={handleBackToPortfolio} />;
     }
@@ -248,18 +282,20 @@ export default function Home() {
   // Portfolio view - pass profile data to ALL components
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar name={profile?.name} onLogoTripleClick={handleTripleClick} visibleSections={
-        [
-          'about',
-          ...(skills.length > 0 ? ['skills'] : []),
-          ...(projects.length > 0 ? ['projects'] : []),
-          ...(experiences.length > 0 ? ['experience'] : []),
-          ...(education.length > 0 ? ['education'] : []),
-          ...(achievements.length > 0 ? ['achievements'] : []),
-          ...(blogPosts.length > 0 ? ['blog'] : []),
-          'contact',
-        ]
-      } />
+      <Navbar
+        name={profile?.name}
+        onLogoTripleClick={handleTripleClick}
+        visibleSections={[
+          "about",
+          ...(skills.length > 0 ? ["skills"] : []),
+          ...(projects.length > 0 ? ["projects"] : []),
+          ...(experiences.length > 0 ? ["experience"] : []),
+          ...(education.length > 0 ? ["education"] : []),
+          ...(achievements.length > 0 ? ["achievements"] : []),
+          ...(blogPosts.length > 0 ? ["blog"] : []),
+          "contact",
+        ]}
+      />
       <main className="flex-1">
         <HeroSection
           name={profile?.name}
@@ -267,7 +303,14 @@ export default function Home() {
           tagline={profile?.tagline}
           resume={profile?.resume}
           stats={heroStats}
-          typingTitles={profile?.titles ? profile.titles.split(',').map((t: string) => t.trim()).filter(Boolean) : undefined}
+          typingTitles={
+            profile?.titles
+              ? profile.titles
+                  .split(",")
+                  .map((t: string) => t.trim())
+                  .filter(Boolean)
+              : undefined
+          }
         />
 
         {profile && (
@@ -276,7 +319,7 @@ export default function Home() {
               name: profile.name,
               title: profile.title,
               tagline: profile.tagline,
-              bio: profile.bio ? profile.bio.split('\n\n') : [],
+              bio: profile.bio ? profile.bio.split("\n\n") : [],
               email: profile.email,
               phone: profile.phone,
               location: profile.location,
@@ -305,11 +348,13 @@ export default function Home() {
               title: p.title,
               description: p.description,
               longDesc: p.longDesc,
-              techStack: p.techStack ? p.techStack.split(',').map((t: string) => t.trim()) : [],
+              techStack: p.techStack
+                ? p.techStack.split(",").map((t: string) => t.trim())
+                : [],
               github: p.github,
               liveUrl: p.liveUrl,
               featured: p.featured,
-              category: p.category?.name || '',
+              category: p.category?.name || "",
             }))}
           />
         )}
@@ -323,8 +368,12 @@ export default function Home() {
               startDate: e.startDate,
               endDate: e.endDate,
               current: e.current,
-              description: e.description ? e.description.split('\n').filter((d) => d.trim()) : [],
-              techStack: e.techStack ? e.techStack.split(',').map((t) => t.trim()) : [],
+              description: e.description
+                ? e.description.split("\n").filter((d) => d.trim())
+                : [],
+              techStack: e.techStack
+                ? e.techStack.split(",").map((t) => t.trim())
+                : [],
             }))}
           />
         )}
@@ -344,6 +393,20 @@ export default function Home() {
           />
         )}
 
+        {certifications.length > 0 && (
+          <CertificationsSection
+            certifications={certifications.map((c) => ({
+              id: c.id,
+              title: c.title,
+              issuer: c.issuer,
+              description: c.description,
+              date: c.date,
+              credentialUrl: c.credentialUrl,
+              credentialId: c.credentialId,
+            }))}
+          />
+        )}
+
         {blogPosts.length > 0 && (
           <BlogSection
             posts={blogPosts.map((p) => ({
@@ -351,8 +414,8 @@ export default function Home() {
               title: p.title,
               slug: p.slug,
               excerpt: p.excerpt,
-              content: p.content || '',
-              tags: p.tags ? p.tags.split(',').map((t) => t.trim()) : [],
+              content: p.content || "",
+              tags: p.tags ? p.tags.split(",").map((t) => t.trim()) : [],
               createdAt: p.createdAt,
             }))}
           />
@@ -363,9 +426,11 @@ export default function Home() {
             achievements={achievements.map((a) => ({
               id: a.id,
               title: a.title,
-              description: a.description || '',
+              description: a.description || "",
               date: a.date,
-              techStack: a.techStack ? a.techStack.split(',').map((t: string) => t.trim()) : [],
+              techStack: a.techStack
+                ? a.techStack.split(",").map((t: string) => t.trim())
+                : [],
             }))}
           />
         )}
